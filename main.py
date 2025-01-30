@@ -66,18 +66,18 @@ async def main():
             if message.lower() == '/exit':
                 break
             encrypted_message = crypto.encrypt_message(message, key)
-            await client.send_message(user_id, encrypted_message)
+            await client.send_message(user_id, PREFIX + encrypted_message)
 
     @client.on(events.NewMessage(from_users=[user_id]))
     async def handle_new_message(event):
-        decrypted_message = crypto.decrypt_message(event.message.message, K)
-        print(f"Получено сообщение: {decrypted_message}")
+        message: str = event.message.message
+        if message.startswith(PREFIX):
+            message = message.removeprefix(PREFIX)
+            message = crypto.decrypt_message(message, K)
+        print(f"Получено сообщение: {message}")
 
     await asyncio.create_task(send_messages(user_id, K))
     await client.run_until_disconnected()
-
-
-
 
 
 async def async_input(prompt):
