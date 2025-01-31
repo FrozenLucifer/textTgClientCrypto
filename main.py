@@ -1,4 +1,5 @@
 import asyncio
+import telethon
 from telethon import TelegramClient, events, sync
 import diffi
 from telethon.tl.custom.dialog import Dialog
@@ -20,10 +21,11 @@ async def get_dialogs(max_dialogs=10):
         if dialog.is_user and not dialog.entity.bot and not dialog.entity.is_self:
             k += 1
             dialog_info = f"{dialog.name[:28]:30} [id={dialog.id}]"
-            if dialog.message.message.startswith(PREFIX):
-                dialog_info += ' (!)'
-            if dialog.message.message.startswith(PREFIX + "start request init"):
-                dialog_info += " start req"
+            if type(dialog.message) == telethon.tl.patched.Message:
+                if dialog.message.message.startswith(PREFIX):
+                    dialog_info += ' (!)'
+                if dialog.message.message.startswith(PREFIX + "start request init"):
+                    dialog_info += " start req"
             print(dialog_info)
         if k == max_dialogs:
             break
